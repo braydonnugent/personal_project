@@ -1,0 +1,205 @@
+Sub Log_Entry()
+
+Dim L As Worksheet
+Dim DB As Worksheet
+Dim Bin As Worksheet
+Dim DBLastRow As Long
+Dim BLastRow As Long
+Dim i As Long
+Dim j As Long
+Dim k As Long
+Dim a As Integer
+Dim b As Integer
+Dim y As Integer
+Dim z As Integer
+
+
+Set L = ThisWorkbook.Sheets("Logger")
+Set DB = ThisWorkbook.Sheets("Database")
+Set Bin = ThisWorkbook.Sheets("Bin")
+DBLastRow = DB.Cells(DB.Rows.Count, "B").End(xlUp).Row
+BinLastRow = Bin.Cells(Bin.Rows.Count, "B").End(xlUp).Row
+
+    a = 2
+    b = 19
+    y = 7
+    z = 11
+    i = DBLastRow + 1
+    
+    'NULL Font Database
+          For j = a To b
+            If L.Cells(2, j).Value = "" Then
+                DB.Cells(i, j).Value = "NULL"
+                DB.Cells(i, j).Font.Italic = True
+                DB.Cells(i, j).Font.Underline = True
+                DB.Cells(i, j).Font.Color = RGB(128, 128, 128)
+                
+    'Logging Database & Clearing Log Section
+                Else
+                   DB.Cells(i, j).Font.Italic = False
+                   DB.Cells(i, j).Font.Underline = False
+                   DB.Cells(i, j).Font.Color = RGB(0, 0, 0)
+                    DB.Cells(i, j).Value = L.Cells(2, j).Value
+                    L.Cells(2, j).Value = ""
+                 End If
+               Next j
+    
+    'Update Last 5 Entries on Logger
+    If L.Cells(6, 1).Value = "Last 5 Entries" Then
+    
+        i = DBLastRow + 1
+        
+        For k = y To z
+            For j = a To b
+            
+            L.Cells(k, j).Value = DB.Cells(i, j).Value
+            
+            Next j
+            i = (i - 1)
+        Next k
+    End If
+
+End Sub
+Sub Remove_Selected_Entry()
+
+Dim L As Worksheet
+Dim DB As Worksheet
+Dim Bin As Worksheet
+Dim DBLastRow As Long
+Dim BLastRow As Long
+Dim i As Long
+Dim j As Long
+Dim k As Long
+Dim a As Integer
+Dim b As Integer
+Dim y As Integer
+Dim z As Integer
+
+
+Set L = ThisWorkbook.Sheets("Logger")
+Set DB = ThisWorkbook.Sheets("Database")
+Set Bin = ThisWorkbook.Sheets("Bin")
+DBLastRow = DB.Cells(DB.Rows.Count, "B").End(xlUp).Row
+BinLastRow = Bin.Cells(Bin.Rows.Count, "B").End(xlUp).Row
+
+    a = 2
+    b = 19
+    y = 7
+    z = 11
+    i = DBLastRow
+    x = BinLastRow + 1
+    
+    'Error Message For No Database Entries
+        If i = 2 Then
+            MsgBox ("Error! No Entries To Remove")
+        End If
+    
+    'Shifting all entries down one cell, vacating top spot for most recent entry
+            For k = 2 To x
+                For j = a To b
+                            
+                    If x > 2 Then
+                        Bin.Cells(x, j).Value = Bin.Cells(x - 1, j).Value
+                        Bin.Cells(x - 1, j).Value = ""
+                    End If
+                Next j
+               x = x - 1
+            Next k
+    
+    'Removing last entry in Database & Placing in Bin
+        For j = a To b
+            If i > 2 Then
+                Bin.Cells(2, j).Value = DB.Cells(i, j).Value
+                DB.Cells(i, j).Value = ""
+                End If
+        Next j
+        
+    'Update Last 5 Entries on Logger
+    DBLastRow = DB.Cells(DB.Rows.Count, "B").End(xlUp).Row
+    
+    If L.Cells(6, 1).Value = "Last 5 Entries" Then
+    
+        i = DBLastRow
+        
+        For k = y To z
+            For j = a To b
+            
+            L.Cells(k, j).Value = DB.Cells(i, j).Value
+            
+            Next j
+            i = (i - 1)
+        Next k
+    End If
+      
+End Sub
+Sub Undo_Remove()
+
+Dim L As Worksheet
+Dim DB As Worksheet
+Dim Bin As Worksheet
+Dim DBLastRow As Long
+Dim BLastRow As Long
+Dim i As Long
+Dim j As Long
+Dim k As Long
+Dim a As Integer
+Dim b As Integer
+Dim y As Integer
+Dim z As Integer
+
+
+Set L = ThisWorkbook.Sheets("Logger")
+Set DB = ThisWorkbook.Sheets("Database")
+Set Bin = ThisWorkbook.Sheets("Bin")
+DBLastRow = DB.Cells(DB.Rows.Count, "B").End(xlUp).Row
+BinLastRow = Bin.Cells(Bin.Rows.Count, "B").End(xlUp).Row
+
+    a = 2
+    b = 19
+    y = 7
+    z = 11
+    i = DBLastRow + 1
+    x = BinLastRow
+    
+    'Error Message For No Bin Entries
+    If x = 1 Then
+        MsgBox ("Error! No Entries Found In Bin")
+    End If
+    
+    For j = a To b
+        If x > 1 Then
+            DB.Cells(i, j).Value = Bin.Cells(2, j).Value
+            Bin.Cells(2, j).Value = ""
+        End If
+    Next j
+    
+    'Re-Ordering Bin Entries
+    For k = 2 To x
+        For j = a To b
+        
+            If x > 2 Then
+                   Bin.Cells(k, j).Value = Bin.Cells(k + 1, j).Value
+                   Bin.Cells(k + 1, j).Value = ""
+            End If
+        Next j
+    Next k
+    
+    
+    'Update Last 5 Entries on Logger
+    DBLastRow = DB.Cells(DB.Rows.Count, "B").End(xlUp).Row
+    
+    If L.Cells(6, 1).Value = "Last 5 Entries" Then
+    
+        i = DBLastRow
+        
+        For k = y To z
+            For j = a To b
+            
+            L.Cells(k, j).Value = DB.Cells(i, j).Value
+            
+            Next j
+            i = (i - 1)
+        Next k
+    End If
+    
+End Sub
